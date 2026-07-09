@@ -1,0 +1,62 @@
+from collections import deque
+
+# Social Network Graph
+graph = {
+    "Alice": ["John", "Emma"],
+    "John": ["Alice", "David", "Sophia"],
+    "Emma": ["Alice", "Bob"],
+    "David": ["John"],
+    "Sophia": ["John"],
+    "Bob": ["Emma"]
+}
+
+# ---------------- BFS ----------------
+def bfs(graph, start, goal):
+    visited = set()
+    queue = deque([(start, [start])])
+
+    while queue:
+        node, path = queue.popleft()
+
+        if node not in visited:
+            print("Visited:", node)
+            visited.add(node)
+
+            if node == goal:
+                print("\nBFS Path:", " -> ".join(path))
+                return
+
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    queue.append((neighbor, path + [neighbor]))
+
+    print("Goal not found")
+
+# ---------------- DFS ----------------
+def dfs(graph, start, goal):
+    visited = set()
+    stack = [(start, [start])]
+
+    while stack:
+        node, path = stack.pop()
+
+        if node not in visited:
+            print("Visited:", node)
+            visited.add(node)
+
+            if node == goal:
+                print("\nDFS Path:", " -> ".join(path))
+                return
+
+            for neighbor in reversed(graph[node]):
+                if neighbor not in visited:
+                    stack.append((neighbor, path + [neighbor]))
+
+    print("Goal not found")
+
+# ---------------- Main ----------------
+print("=== Breadth First Search (BFS) ===")
+bfs(graph, "Alice", "Bob")
+
+print("\n=== Depth First Search (DFS) ===")
+dfs(graph, "Alice", "Bob")

@@ -1,0 +1,44 @@
+import pandas as pd
+
+# Create the dataset
+data = {
+    "Latency Sensitivity": ["High", "High", "High", "Low", "High"],
+    "Data Volume": ["Large", "Small", "Large", "Large", "Large"],
+    "RAM Demand": ["High", "High", "High", "Medium", "High"],
+    "Network Bandwidth": ["Dedicated", "Shared", "Shared", "Shared", "Dedicated"],
+    "GPU Required": ["Yes", "Yes", "Yes", "No", "No"],
+    "High-Performance Edge": ["Yes", "No", "Yes", "No", "Yes"]
+}
+
+# Convert to DataFrame
+df = pd.DataFrame(data)
+
+# Save as CSV
+df.to_csv("workload_data.csv", index=False)
+
+# Load the dataset
+dataset = pd.read_csv("workload_data.csv")
+
+print("===== DATASET =====")
+print(dataset)
+
+# Initialize the most specific hypothesis
+hypothesis = ['0'] * (len(dataset.columns) - 1)
+
+print("\nInitial Hypothesis:")
+print(hypothesis)
+
+# Find-S Algorithm
+for i, row in dataset.iterrows():
+    if row["High-Performance Edge"] == "Yes":
+        for j in range(len(hypothesis)):
+            if hypothesis[j] == '0':
+                hypothesis[j] = row[j]
+            elif hypothesis[j] != row[j]:
+                hypothesis[j] = '?'
+
+    print(f"\nHypothesis after processing Row {i+1}:")
+    print(hypothesis)
+
+print("\n===== FINAL SPECIFIC HYPOTHESIS =====")
+print(hypothesis)

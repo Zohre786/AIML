@@ -1,0 +1,118 @@
+data = [
+    ['Sunny', 'Warm', 'Normal', 'Strong', 'Yes'],  # D1
+    ['Sunny', 'Warm', 'High', 'Strong', 'Yes'],    # D2
+    ['Rainy', 'Cold', 'High', 'Strong', 'No'],     # D3
+    ['Sunny', 'Warm', 'High', 'Weak', 'Yes']       # D4
+]
+
+attributes = ['Sky', 'AirTemp', 'Humidity', 'Wind']
+
+
+S = ['Ø', 'Ø', 'Ø', 'Ø']
+
+
+G = [['?', '?', '?', '?']]
+
+
+def covers(hypothesis, instance):
+    for h, value in zip(hypothesis, instance):
+        if h != '?' and h != value:
+            return False
+    return True
+
+
+
+def generalize_S(S, instance):
+    new_S = S.copy()
+
+    for i in range(len(S)):
+        if S[i] == 'Ø':
+            new_S[i] = instance[i]
+        elif S[i] != instance[i]:
+            new_S[i] = '?'
+
+    return new_S
+
+
+
+def specialize_G(G, S, negative):
+    new_G = []
+
+    for hypothesis in G:
+
+
+        if not covers(hypothesis, negative):
+            new_G.append(hypothesis)
+            continue
+
+
+        for i in range(len(hypothesis)):
+
+
+            if hypothesis[i] == '?':
+
+
+                if S[i] != '?' and S[i] != 'Ø':
+                    new_hypothesis = hypothesis.copy()
+                    new_hypothesis[i] = S[i]
+
+                    if covers(new_hypothesis, S):
+                        new_G.append(new_hypothesis)
+
+    return new_G
+
+
+def remove_inconsistent_G(G, S):
+    return [g for g in G if covers(g, S)]
+
+
+
+def remove_inconsistent_S(S, instance):
+    if covers(S, instance):
+        return S
+    return S
+
+
+def print_boundaries(S, G):
+    print("S =", S)
+    print("G =")
+    for g in G:
+        print("   ", g)
+    print()
+
+
+
+print("CANDIDATE ELIMINATION ALGORITHM")
+print("=" * 50)
+
+for step, row in enumerate(data, start=1):
+
+    instance = row[:-1]
+    target = row[-1]
+
+    print(f"\nAfter processing D{step}:")
+    print("Instance:", instance)
+    print("Target:", target)
+
+    if target == 'Yes':
+        S = generalize_S(S, instance)
+
+        G = [g for g in G if covers(g, instance)]
+
+    else:
+        
+        G = specialize_G(G, S, instance)
+
+    print_boundaries(S, G)
+
+
+print("=" * 50)
+print("FINAL VERSION SPACE BOUNDARIES")
+print("=" * 50)
+
+print("Most Specific Boundary (S):")
+print(S)
+
+print("\nMost General Boundary (G):")
+for g in G:
+    print(g)
